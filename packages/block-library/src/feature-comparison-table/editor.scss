@@ -1,0 +1,121 @@
+.wp-block-feature-comparison-table {
+	&__placeholder-form {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		align-items: flex-end;
+	}
+
+	&__cell {
+		cursor: pointer;
+		user-select: none;
+		transition: background-color 0.1s ease;
+
+		&:hover {
+			background-color: rgba(0, 124, 186, 0.06);
+		}
+
+		&.is-selected {
+			outline: 2px solid var(--wp-admin-theme-color, #007cba);
+			outline-offset: -2px;
+		}
+	}
+
+	&__column-header {
+		&.is-selected {
+			outline: 2px solid var(--wp-admin-theme-color, #007cba);
+			outline-offset: -2px;
+		}
+	}
+
+	&__note-field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	&__note-format-toolbar {
+		display: flex;
+		gap: 2px;
+	}
+
+	&__note-link-form {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	&__note-link-actions {
+		display: flex;
+		gap: 4px;
+	}
+
+	&__note-input {
+		border: 1px solid rgba(0, 0, 0, 0.2);
+		border-radius: 2px;
+		padding: 6px 8px;
+		min-height: 36px;
+		font-size: 13px;
+		margin: 0;
+
+		&:focus {
+			outline: 2px solid var(--wp-admin-theme-color, #007cba);
+			outline-offset: -2px;
+		}
+
+		p {
+			margin: 0;
+		}
+	}
+
+	&__cell-editor {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding: 12px;
+		min-width: 280px;
+		max-width: 340px;
+		box-sizing: border-box;
+	}
+
+	&__cell-editor-label {
+		margin: 0;
+		font-size: 11px;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: #1e1e1e;
+	}
+
+	&__status-buttons {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	&__status-button {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		justify-content: flex-start;
+
+		.wp-block-feature-comparison-table__symbol {
+			width: 1.2em;
+			height: 1.2em;
+			flex-shrink: 0;
+		}
+	}
+
+	&__cell-editor-insert {
+		border-top: 1px solid rgba(0, 0, 0, 0.1);
+		padding-top: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	&__insert-buttons {
+		display: flex;
+		gap: 2px;
+	}
+}

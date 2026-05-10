@@ -1,0 +1,78 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "core/feature-comparison-table",
+	"title": "Feature Comparison Table",
+	"category": "text",
+	"description": "Compare features across plans or products with clear visual indicators.",
+	"keywords": [ "comparison", "pricing", "table", "plans", "features" ],
+	"textdomain": "default",
+	"attributes": {
+		"featureColumnLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"columns": {
+			"type": "array",
+			"default": []
+		},
+		"rows": {
+			"type": "array",
+			"default": []
+		},
+		"caption": {
+			"type": "string",
+			"default": ""
+		},
+		"highlightedColumn": {
+			"type": "number",
+			"default": -1
+		},
+		"showFeatureColumnHeader": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"anchor": true,
+		"align": [ "wide", "full" ],
+		"color": {
+			"__experimentalSkipSerialization": true,
+			"gradients": true,
+			"__experimentalDefaultControls": {
+				"background": true,
+				"text": true
+			}
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalDefaultControls": {
+				"margin": false,
+				"padding": false
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"__experimentalBorder": {
+			"__experimentalSkipSerialization": true,
+			"color": true,
+			"style": true,
+			"width": true,
+			"__experimentalDefaultControls": {
+				"color": false,
+				"style": false,
+				"width": false
+			}
+		},
+		"interactivity": {
+			"clientNavigation": true
+		}
+	},
+	"editorStyle": "wp-block-feature-comparison-table-editor",
+	"style": "wp-block-feature-comparison-table"
+}
