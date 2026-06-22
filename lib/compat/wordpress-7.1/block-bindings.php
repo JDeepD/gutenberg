@@ -14,6 +14,9 @@ add_filter(
 		if ( 'core/list-item' === $block_type && ! in_array( 'content', $attributes, true ) ) {
 			$attributes[] = 'content';
 		}
+		if ( 'core/table' === $block_type && ! in_array( 'caption', $attributes, true ) ) {
+			$attributes[] = 'caption';
+		}
 		return $attributes;
 	},
 	10,

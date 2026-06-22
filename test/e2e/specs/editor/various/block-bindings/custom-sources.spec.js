@@ -1088,6 +1088,32 @@ test.describe( 'Registered sources', () => {
 			await expect( contentAttribute ).toBeVisible();
 		} );
 
+		test( 'should be possible to connect the table caption', async ( {
+			editor,
+			page,
+		} ) => {
+			await editor.insertBlock( {
+				name: 'core/table',
+				attributes: {
+					body: [
+						{
+							cells: [
+								{
+									content: 'Cell',
+									tag: 'td',
+								},
+							],
+						},
+					],
+				},
+			} );
+			await page.getByLabel( 'Attributes options' ).click();
+			const captionAttribute = page.getByRole( 'menuitemcheckbox', {
+				name: 'Show caption',
+			} );
+			await expect( captionAttribute ).toBeVisible();
+		} );
+
 		test( 'should be possible to connect the button supported attributes', async ( {
 			editor,
 			page,

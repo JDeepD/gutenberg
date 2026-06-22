@@ -810,4 +810,98 @@ HTML;
 			'The __default binding should be updated with the list item content binding metadata.'
 		);
 	}
+
+	/**
+	 * Renders a table block with a source value bound to its caption attribute.
+	 *
+	 * @param mixed  $source_value  The source value.
+	 * @param string $block_content The block content.
+	 * @return string Rendered block content.
+	 */
+	private function render_table_with_source_value( $source_value, $block_content ) {
+		register_block_bindings_source(
+			self::SOURCE_NAME,
+			array(
+				'label'              => self::SOURCE_LABEL,
+				'get_value_callback' => function () use ( $source_value ) {
+					return $source_value;
+				},
+			)
+		);
+
+		$parsed_blocks = parse_blocks( $block_content );
+		$block         = new WP_Block( $parsed_blocks[0] );
+		return trim( $block->render() );
+	}
+
+	/**
+	 * Tests if the Table block caption is updated with the value returned by the
+	 * source, while the table markup is preserved.
+	 *
+	 * @covers WP_Block::render
+	 */
+	public function test_update_table_caption_with_value_from_source() {
+		$block_content = <<<HTML
+<!-- wp:table {"metadata":{"bindings":{"caption":{"source":"test/source"}}}} -->
+<figure class="wp-block-table"><table><tbody><tr><td>Cell content</td></tr></tbody></table><figcaption class="wp-element-caption">This should not appear</figcaption></figure>
+<!-- /wp:table -->
+HTML;
+		$result        = $this->render_table_with_source_value( 'test source value', $block_content );
+
+		$this->assertStringContainsString(
+			'<figcaption class="wp-element-caption">test source value</figcaption>',
+			$result,
+			'The table caption should be replaced by the value returned by the source.'
+		);
+		$this->assertStringContainsString(
+			'<td>Cell content</td>',
+			$result,
+			'The table markup should be preserved when its caption is bound.'
+		);
+	}
+
+	/**
+	 * Tests that the Table block caption supports the default binding for
+	 * pattern overrides.
+	 *
+	 * @covers WP_Block::process_block_bindings
+	 */
+	public function test_default_binding_for_pattern_overrides_table_caption() {
+		$block_content = <<<HTML
+<!-- wp:table {"metadata":{"bindings":{"__default":{"source":"core/pattern-overrides"}},"name":"Test table"}} -->
+<figure class="wp-block-table"><table><tbody><tr><td>Cell content</td></tr></tbody></table><figcaption class="wp-element-caption">Default caption</figcaption></figure>
+<!-- /wp:table -->
+HTML;
+
+		$expected_caption = 'Pattern override caption';
+		$parsed_blocks    = parse_blocks( $block_content );
+		$block            = new WP_Block(
+			$parsed_blocks[0],
+			array(
+				'pattern/overrides' => array(
+					'Test table' => array(
+						'caption' => $expected_caption,
+					),
+				),
+			)
+		);
+
+		$result = trim( $block->render() );
+
+		$this->assertStringContainsString(
+			"<figcaption class=\"wp-element-caption\">$expected_caption</figcaption>",
+			$result,
+			'The `__default` attribute should be replaced with the table caption binding.'
+		);
+		$this->assertStringContainsString(
+			'<td>Cell content</td>',
+			$result,
+			'The table markup should be preserved when its caption uses a pattern override.'
+		);
+		$this->assertSame(
+			array( 'source' => 'core/pattern-overrides' ),
+			$block->attributes['metadata']['bindings']['caption'],
+			'The __default binding should be updated with the table caption binding metadata.'
+		);
+	}
 }
