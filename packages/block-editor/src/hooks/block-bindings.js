@@ -119,10 +119,8 @@ export default {
 	edit: BlockBindingsPanel,
 	attributeKeys: [ 'metadata' ],
 	hasSupport( name ) {
-		return ! [
-			'core/post-date',
-			'core/navigation-link',
-			'core/navigation-submenu',
-		].includes( name );
+		return ! [ 'core/navigation-link', 'core/navigation-submenu' ].includes(
+			name
+		);
 	},
 };

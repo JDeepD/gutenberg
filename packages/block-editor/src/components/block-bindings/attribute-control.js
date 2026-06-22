@@ -59,6 +59,12 @@ export default function BlockBindingsAttributeControl( {
 
 			const attributeType =
 				_attribute?.type === 'rich-text' ? 'string' : _attribute?.type;
+			// Optional semantic format (e.g. 'date-time', 'uri') declared in
+			// the block's `block.json`. When present, a source field must match
+			// it as well as the raw type to be offered as compatible. This keeps
+			// attributes like the Post Date `datetime` from being bound to
+			// arbitrary string sources that would break the block.
+			const attributeFormat = _attribute?.format;
 
 			const sourceFields = {};
 			Object.entries( getAllBlockBindingsSources() ).forEach(
@@ -71,7 +77,10 @@ export default function BlockBindingsAttributeControl( {
 						return;
 					}
 					const compatibleFieldsList = fieldsList.filter(
-						( field ) => field.type === attributeType
+						( field ) =>
+							field.type === attributeType &&
+							( ! attributeFormat ||
+								field.format === attributeFormat )
 					);
 					if ( compatibleFieldsList.length ) {
 						sourceFields[ sourceName ] = compatibleFieldsList;
