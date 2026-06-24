@@ -14,6 +14,12 @@ add_filter(
 		if ( 'core/list-item' === $block_type && ! in_array( 'content', $attributes, true ) ) {
 			$attributes[] = 'content';
 		}
+		if (
+			in_array( $block_type, array( 'core/audio', 'core/video', 'core/embed' ), true ) &&
+			! in_array( 'caption', $attributes, true )
+		) {
+			$attributes[] = 'caption';
+		}
 		return $attributes;
 	},
 	10,

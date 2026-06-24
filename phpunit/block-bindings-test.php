@@ -810,4 +810,140 @@ HTML;
 			'The __default binding should be updated with the list item content binding metadata.'
 		);
 	}
+
+	/**
+	 * Renders a media block whose caption attribute is bound to a source value.
+	 *
+	 * @param string $source_value  The value returned by the source for the caption.
+	 * @param string $block_content The serialized block markup to render.
+	 * @return string The rendered block markup.
+	 */
+	private function render_media_block_with_source_value( $source_value, $block_content ) {
+		register_block_bindings_source(
+			self::SOURCE_NAME,
+			array(
+				'label'              => self::SOURCE_LABEL,
+				'get_value_callback' => function () use ( $source_value ) {
+					return $source_value;
+				},
+			)
+		);
+
+		$parsed_blocks = parse_blocks( $block_content );
+		$block         = new WP_Block( $parsed_blocks[0] );
+		return $block->render();
+	}
+
+	/**
+	 * Tests that the caption of the Audio, Video and Embed blocks is updated with
+	 * the value returned by the source, while the rest of the markup is preserved.
+	 *
+	 * Support for the caption attribute is added via the
+	 * `block_bindings_supported_attributes` filter.
+	 *
+	 * @dataProvider data_media_block_caption_markup
+	 *
+	 * @covers WP_Block::process_block_bindings
+	 *
+	 * @param string $block_content     The serialized block markup to render.
+	 * @param string $preserved_markup  A fragment of the block markup that must be preserved.
+	 */
+	public function test_update_media_block_caption_with_value_from_source( $block_content, $preserved_markup ) {
+		$result = $this->render_media_block_with_source_value( 'test source value', $block_content );
+
+		$this->assertStringContainsString(
+			'<figcaption class="wp-element-caption">test source value</figcaption>',
+			$result,
+			'The media block caption should be replaced by the value returned by the source.'
+		);
+		$this->assertStringNotContainsString(
+			'This should not appear',
+			$result,
+			'The original caption should be replaced by the value returned by the source.'
+		);
+		$this->assertStringContainsString(
+			$preserved_markup,
+			$result,
+			'The media markup should be preserved when its caption is bound.'
+		);
+	}
+
+	/**
+	 * Data provider for media blocks supporting caption bindings.
+	 *
+	 * @return array[]
+	 */
+	public function data_media_block_caption_markup() {
+		return array(
+			'audio' => array(
+				<<<HTML
+<!-- wp:audio {"metadata":{"bindings":{"caption":{"source":"test/source"}}}} -->
+<figure class="wp-block-audio"><audio controls src="https://example.com/audio.mp3"></audio><figcaption class="wp-element-caption">This should not appear</figcaption></figure>
+<!-- /wp:audio -->
+HTML
+				,
+				'<audio controls src="https://example.com/audio.mp3"></audio>',
+			),
+			'video' => array(
+				<<<HTML
+<!-- wp:video {"metadata":{"bindings":{"caption":{"source":"test/source"}}}} -->
+<figure class="wp-block-video"><video controls src="https://example.com/video.mp4"></video><figcaption class="wp-element-caption">This should not appear</figcaption></figure>
+<!-- /wp:video -->
+HTML
+				,
+				'<video controls src="https://example.com/video.mp4"></video>',
+			),
+			'embed' => array(
+				<<<HTML
+<!-- wp:embed {"url":"https://example.com/","type":"rich","metadata":{"bindings":{"caption":{"source":"test/source"}}}} -->
+<figure class="wp-block-embed"><div class="wp-block-embed__wrapper">https://example.com/</div><figcaption class="wp-element-caption">This should not appear</figcaption></figure>
+<!-- /wp:embed -->
+HTML
+				,
+				'<div class="wp-block-embed__wrapper">https://example.com/</div>',
+			),
+		);
+	}
+
+	/**
+	 * Tests that the caption of media blocks supports the default binding for
+	 * pattern overrides.
+	 *
+	 * @covers WP_Block::process_block_bindings
+	 */
+	public function test_default_binding_for_pattern_overrides_media_caption() {
+		$block_content = <<<HTML
+<!-- wp:audio {"metadata":{"bindings":{"caption":{"source":"core/pattern-overrides"}},"name":"Editable Audio"}} -->
+<figure class="wp-block-audio"><audio controls src="https://example.com/audio.mp3"></audio><figcaption class="wp-element-caption">Default caption</figcaption></figure>
+<!-- /wp:audio -->
+HTML;
+
+		$expected_caption = 'Pattern <em>override</em>';
+		$parsed_blocks    = parse_blocks( $block_content );
+		$block            = new WP_Block(
+			$parsed_blocks[0],
+			array(
+				'pattern/overrides' => array(
+					'Editable Audio' => array( 'caption' => $expected_caption ),
+				),
+			)
+		);
+
+		$result = $block->render();
+
+		$this->assertStringContainsString(
+			"<figcaption class=\"wp-element-caption\">$expected_caption</figcaption>",
+			$result,
+			'The audio caption should be replaced by the pattern override value.'
+		);
+
+		$expected_bindings_metadata = array(
+			'caption' => array( 'source' => 'core/pattern-overrides' ),
+		);
+		$this->assertSame(
+			$expected_bindings_metadata,
+			$block->attributes['metadata']['bindings'],
+			'The __default binding should expand to the caption binding metadata.'
+		);
+	}
 }

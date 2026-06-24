@@ -159,6 +159,37 @@ test.describe( 'Registered sources', () => {
 			).toHaveText( 'Text Field Value' );
 		} );
 
+		test( 'should show the returned value in the audio caption', async ( {
+			editor,
+		} ) => {
+			await editor.insertBlock( {
+				name: 'core/audio',
+				attributes: {
+					anchor: 'connected-audio',
+					src: 'https://example.com/audio.mp3',
+					caption: 'audio default caption',
+					metadata: {
+						bindings: {
+							caption: {
+								source: 'testing/complete-source',
+								args: { key: 'text_field' },
+							},
+						},
+					},
+				},
+			} );
+			const audioCaption = editor.canvas
+				.getByRole( 'document', { name: 'Block: Audio' } )
+				.locator( 'figcaption' );
+			await expect( audioCaption ).toHaveText( 'Text Field Value' );
+
+			// Check the frontend shows the value of the custom field.
+			const previewPage = await editor.openPreviewPage();
+			await expect(
+				previewPage.locator( '#connected-audio figcaption' )
+			).toHaveText( 'Text Field Value' );
+		} );
+
 		test( 'should show the returned values in button attributes', async ( {
 			editor,
 		} ) => {
